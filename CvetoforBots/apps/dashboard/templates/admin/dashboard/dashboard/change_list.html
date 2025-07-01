@@ -1,0 +1,28 @@
+{% extends "admin/change_list.html" %}
+
+{% block content_title %}
+    <h1>Ключевые метрики бота</h1>
+{% endblock %}
+
+{% block result_list %}
+    <div class="results">
+        <table id="result_list">
+            <thead>
+                <tr>
+                    <th><div class="text"><span>Метрика</span></div></th>
+                    <th><div class="text"><span>Значение</span></div></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in stats_data.items %}
+                    <tr class="{% cycle 'row1' 'row2' %}">
+                        <td>{{ key }}</td>
+                        <td><strong>{{ value }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block pagination %}{% endblock %}

@@ -1,0 +1,26 @@
+[
+    {
+        "model": "core.BotInstance",
+        "pk": 1,
+        "fields": {
+            "title": "Улан-Удэ Бот",
+            "token": "ULAN_UDE_TOKEN",
+            "status": "stopped",
+            "started_at": null,
+            "down_at": null,
+            "pid": null
+        }
+    },
+    {
+        "model": "core.BotInstance",
+        "pk": 2,
+        "fields": {
+            "title": "Ангарск Бот",
+            "token": "ANGARSK_TOKEN",
+            "status": "stopped",
+            "started_at": null,
+            "down_at": null,
+            "pid": null
+        }
+    }
+]
