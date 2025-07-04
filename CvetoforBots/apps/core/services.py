@@ -33,7 +33,10 @@ class BotService:
         try:
             os.kill(self.bot.pid, 9)
         except ProcessLookupError:
-            pass
+            self.update_status(self.STOPPED, None)
+        except OSError:
+            self.update_status(self.STOPPED, None)
+
 
         self.update_status(self.STOPPED, None)
 

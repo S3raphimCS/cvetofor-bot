@@ -46,7 +46,7 @@ class YookassaWebHookView(APIView):
                         message_to_managers = f"""
 Новый заказ
 Имя заказчика: {order.user_name}
-Пользователь: @{order.telegram_user.username}
+Пользователь: {order.telegram_user.username}
 Состав заказа: {GroupProduct.objects.get(id=order.group_product_id).title}{", открытка" if order.with_post_card else ''}
 {'Текст открытки: ' + order.post_card_text if order.with_post_card else ''}
 {"Состав букета:" + order.compound if order.compound else ''}

@@ -29,10 +29,20 @@ from CvetoforBots.services.payments.payment import PaymentService
 def menu(callback: types.CallbackQuery | types.Message, context: dict[str, Any]):
     bot = context['bot']
     kb_builder = KeyboardBuilder()
+
+
     if isinstance(callback, types.CallbackQuery):
         chat_id = callback.message.chat.id
     else:
         chat_id = callback.chat.id
+
+    if user := TelegramUser.objects.filter(telegram_id=chat_id).first():  # TODO Удалить у пользователя никнейм и проверить
+        if not user.is_active:
+            user.is_active = True
+        if not user.username:
+            user.username = callback.from_user.username if callback.from_user.username else None
+        user.save(update_fields=["is_active", "username"])
+
     categories_buttons = [
         types.InlineKeyboardButton(
             constants.CategoryButtons.BUDGET_BOUQUET.text,
@@ -75,6 +85,7 @@ def category_callback(callback: types.CallbackQuery, context: dict[str, Any]):
         user = TelegramUser.objects.filter(telegram_id=callback.from_user.id).first()
         user.is_active = True
         user.save(update_fields=["is_active"])
+        # TODO Дописать присваивание никнейма
 
     kb_builder = KeyboardBuilder()
     welcome_text = (
@@ -935,6 +946,23 @@ def make_order(message, context: dict[str, Any]):
             text="Что-то пошло не так",
             reply_markup=keyboard
         )
+
+
+def unknown_command_handler(message, context: dict[str, Any]):
+    bot = context['bot']
+    chat_id = message.chat.id
+    kb_builder = KeyboardBuilder()
+    buttons_list = [
+        types.InlineKeyboardButton("🏠 Вернуться в меню",
+                                   callback_data="menu"),
+    ]
+    kb_builder.add_rows(buttons_list, row_width=1)
+    keyboard = kb_builder.build()
+    bot.send_message(
+        chat_id=chat_id,
+        text="Введена неизвестная команда",
+        reply_markup=keyboard
+    )  # TODO Test
 
 
 def _generate_keyboard(filters, flowers=False):

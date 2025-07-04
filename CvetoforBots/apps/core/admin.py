@@ -28,7 +28,7 @@ class CustomUserAdmin(UserAdmin):
 @admin.register(PDFDocument)
 class PDFDocumentAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'file')
-    # exclude = ('slug',)
+    exclude = ('slug',)
 
 
 @admin.register(BotInstance)

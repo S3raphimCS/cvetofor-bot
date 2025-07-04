@@ -99,7 +99,7 @@ class TelegramUser(BaseModel):
     )
 
     def __str__(self):
-        return f"@{self.username}" if self.username else str(self.telegram_id)
+        return f"{self.username}" if self.username else str(self.telegram_id)
 
     class Meta:
         verbose_name = "Пользователь Telegram"

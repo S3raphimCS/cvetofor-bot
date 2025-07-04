@@ -31,9 +31,9 @@ def start_handler(
 
     user = TelegramUser.objects.filter(telegram_id=message.from_user.id).first()
     if not user:
-        TelegramUser.objects.create(
+        TelegramUser.objects.create( # TODO Test user creation
             telegram_id=message.from_user.id,
-            username=message.from_user.username,
+            username="@" + message.from_user.username if message.from_user.username else None,
             bot=bot_instance,
         )
 
