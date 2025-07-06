@@ -14,6 +14,8 @@ DOMAIN = config("DOMAIN", default="localhost:8000")
 
 ALLOWED_HOSTS = [f"{DOMAIN}", "localhost", "127.0.0.1"]
 
+# FORCE_SCRIPT_NAME = '/bots'
+
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -24,6 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
+    "rest_framework",
+    "django_celery_beat",
+
     'CvetoforBots.apps.core',
     'CvetoforBots.apps.dashboard',
     "CvetoforBots.apps.flowers",
@@ -31,9 +36,6 @@ INSTALLED_APPS = [
     "CvetoforBots.apps.orders",
     "CvetoforBots.apps.mailing",
     "CvetoforBots.apps.periodic_tasks",
-
-    "rest_framework",
-    "django_celery_beat"
 ]
 
 MIDDLEWARE = [
@@ -101,7 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Irkutsk'
 
 USE_I18N = True
 

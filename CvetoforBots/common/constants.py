@@ -43,7 +43,7 @@ documents_tuple = namedtuple('DocumentButton', ['text', 'slug'])
 class DocumentButtons:
     OFFER = documents_tuple("Оферта", "offer")
     POLICY = documents_tuple("Политика обработки персональных данных", "policy")
-    PERSONAL_DATA = documents_tuple("Согласие на обработку персональных данных", "personal-data")
+    PERSONAL_DATA = documents_tuple("Согласие на обработку персональных данных", "personal_data")
     NOTIFICATION = documents_tuple("Согласие на получение рассылки", "notification")
     USER_AGREE = documents_tuple("Согласен(-на)", "user_agreed")
 

@@ -230,7 +230,6 @@ class AmoCRMWrapper:
                                         is_renewed=True)
             return response["_embedded"]["leads"][0]["id"], contact
         except Exception as err:
-            # logger.info(response)
             logger.error(err)
 
     def create_contact(self, name: str, phone: str, tg_username, tg_id, is_renewed=False) -> int | None:
@@ -280,14 +279,4 @@ class AmoCRMWrapper:
                 return self.create_contact(name, phone, is_renewed=True)
             return response['_embedded']['contacts'][0]["id"]
         except Exception as err:
-            # logger.info(response)
             logger.error(err)
-
-# amocrm_wrapper_1 = AmoCRMWrapper()
-# amocrm_wrapper_1.init_oauth2()
-#
-# if __name__ == "__main__":
-#     amocrm_wrapper_1 = AmoCRMWrapper()
-#
-#     # print(amocrm_wrapper_1.get_lead_by_id(34819677))
-#     print(amocrm_wrapper_1.add_lead(data={"add": [{"name": "Сделка с бота", "price": 1500}]}))

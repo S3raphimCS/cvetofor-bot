@@ -35,9 +35,7 @@ class OrderAdmin(admin.ModelAdmin):
 
         try:
             product = GroupProduct.objects.get(id=obj.group_product_id)
-            from django.urls import reverse
-            link = reverse("admin:flowers_groupproduct_change", args=[product.id])
-            return format_html('<a href="{}">{}</a>', link, product.title)
+            return product.title
 
             # Или просто вернуть название
             # return product.name

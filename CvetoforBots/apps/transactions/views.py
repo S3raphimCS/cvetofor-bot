@@ -53,11 +53,14 @@ class YookassaWebHookView(APIView):
 Дата доставки: {order.delivery_date}
 Время доставки: {order.time_interval}
                         """
-                        bot.send_message(
-                            chat_id=group_id,
-                            text=message_to_managers,
-                            parse_mode="HTML"
-                        )
+                        try:
+                            bot.send_message(
+                                chat_id=group_id,
+                                text=message_to_managers,
+                                parse_mode="HTML"
+                            )
+                        except Exception as err:
+                            logger.error("Ошибка при отправке сообщения в телеграм группу в Ангарске: ", err)
                     else:
                         bot_instance = BotInstance.objects.filter(title__icontains="улан").first()
                         bot = TelegramBot(bot_instance).bot

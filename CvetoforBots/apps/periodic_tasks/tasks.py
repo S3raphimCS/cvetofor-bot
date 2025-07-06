@@ -34,7 +34,6 @@ def send_instant_mailing() -> None:
                 subs = TelegramUser.objects.annotate(order_count=Count("orders")).filter(order_count__gte=2,
                                                                                          bot=mailing.bot,
                                                                                          is_active=True)
-        logger.info("Кому рассылка - ", subs)
         for sub in subs:
             try:
                 keyboard = None

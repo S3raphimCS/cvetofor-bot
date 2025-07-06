@@ -30,17 +30,16 @@ def menu(callback: types.CallbackQuery | types.Message, context: dict[str, Any])
     bot = context['bot']
     kb_builder = KeyboardBuilder()
 
-
     if isinstance(callback, types.CallbackQuery):
         chat_id = callback.message.chat.id
     else:
         chat_id = callback.chat.id
 
-    if user := TelegramUser.objects.filter(telegram_id=chat_id).first():  # TODO Удалить у пользователя никнейм и проверить
+    if user := TelegramUser.objects.filter(telegram_id=chat_id).first():
         if not user.is_active:
             user.is_active = True
-        if not user.username:
-            user.username = callback.from_user.username if callback.from_user.username else None
+        if not user.username or "@" not in user.username:
+            user.username = "@" + callback.from_user.username if callback.from_user.username else None
         user.save(update_fields=["is_active", "username"])
 
     categories_buttons = [
@@ -75,17 +74,13 @@ def category_callback(callback: types.CallbackQuery, context: dict[str, Any]):
     )
 
     if not TelegramUser.objects.filter(telegram_id=callback.from_user.id).exists():
-        if "улан" in context["bot_instance"].title.lower():
-            TelegramUser.objects.create(telegram_id=callback.from_user.id, username=callback.from_user.username,
-                                        bot=bot_instance)
-        else:
-            TelegramUser.objects.create(telegram_id=callback.from_user.id, username=callback.from_user.username,
-                                        bot=bot_instance)
+        TelegramUser.objects.create(telegram_id=callback.from_user.id, username=callback.from_user.username,
+                                    bot=bot_instance)
     else:
         user = TelegramUser.objects.filter(telegram_id=callback.from_user.id).first()
+        user.username = callback.from_user.username
         user.is_active = True
-        user.save(update_fields=["is_active"])
-        # TODO Дописать присваивание никнейма
+        user.save(update_fields=["is_active", "username"])
 
     kb_builder = KeyboardBuilder()
     welcome_text = (
@@ -962,7 +957,7 @@ def unknown_command_handler(message, context: dict[str, Any]):
         chat_id=chat_id,
         text="Введена неизвестная команда",
         reply_markup=keyboard
-    )  # TODO Test
+    )
 
 
 def _generate_keyboard(filters, flowers=False):

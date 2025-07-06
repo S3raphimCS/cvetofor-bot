@@ -6,14 +6,34 @@ from django.utils.html import format_html
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.apps import apps
-
 from CvetoforBots.apps.core.models import BotInstance, PDFDocument, TelegramUser
 from CvetoforBots.apps.orders.models import Order
-
+from django_celery_beat.models import (
+    PeriodicTask,
+    IntervalSchedule,
+    CrontabSchedule,
+    SolarSchedule,
+    ClockedSchedule,
+)
 
 admin.site.unregister(User)
 app = apps.get_app_config('auth')
 app.verbose_name = 'Администраторы ботов'
+
+
+# Unregister Celery
+models_to_unregister = [
+    PeriodicTask,
+    IntervalSchedule,
+    CrontabSchedule,
+    SolarSchedule,
+    ClockedSchedule,
+]
+for model in models_to_unregister:
+    try:
+        admin.site.unregister(model)
+    except admin.sites.NotRegistered:
+        pass
 
 
 @admin.register(User)

@@ -75,14 +75,12 @@ class TelegramBot:
             callbacks.handle_budget_filter: {
                 'func': lambda callback: callback.data.startswith(
                     "filter:") or callback.data == constants.ActionButtons.NEW_FILTER.callback,
-            },
-            callbacks.unknown_command_handler: {
-                "func": lambda message: message.text.startswith('')
-            },  # TODO Тест
+            }
         }
         message_handlers_map = {
             messages.start_handler: {'commands': ['start']},
             messages.menu_handler: {'commands': ['menu']},
+            callbacks.unknown_command_handler: {"content_types": ["text"]}
         }
 
         context = {
