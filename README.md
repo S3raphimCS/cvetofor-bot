@@ -74,9 +74,13 @@
 2) Активировать виртуальное окружение:
    `. venv/bin/activate` для Linux или `.\venv\Scripts\activate` для Windows
 3) Установить зависимости для проекта `pip install -r src/requirements.txt`
-4) Запустить django миграции: `python manage.py migrate`
-5) Создать суперпользователя django: `python manage.py createsuperuser` (для использования в локальной разработке)
-6) Запустить django server: `python manage.py runserver`
+4) Соберите статичные файлы `python manage.py collectstatic`
+5) Запустить django миграции: `python manage.py migrate`
+6) Подгрузите объекты ботов в админку `python manage.py loaddata Cvetoforbots/apps/core/fixtures/botinstance.json`
+7) Загрузка старой базы пользователей `python manage.py load_users Cvetoforbots/apps/core/fixtures/users.json`
+8) Создать celery-таски `python manage.py setuptasks`
+9) Создать суперпользователя django: `python manage.py createsuperuser` (для использования в локальной разработке)
+10) Запустить django server: `python manage.py runserver`
 
 Боты запускаются через Django-Админку.
 

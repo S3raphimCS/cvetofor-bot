@@ -21,10 +21,13 @@ class BotService:
             if self.bot.status == self.RUNNING:
                 return
 
+            stdout_log = open(f"/var/www/cvetofor-bot/logs/bot_{self.bot.id}_stdout.log", "w")
+            stderr_log = open(f"/var/www/cvetofor-bot/logs/bot_{self.bot.id}_stderr.log", "w")
+
             process = subprocess.Popen(
                 self.COMMAND + (str(self.bot.id),),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                stdout=stdout_log,  # subprocess.DEVNULL,
+                stderr=stderr_log  # subprocess.DEVNULL
             )
 
             self.update_status(self.RUNNING, process.pid)

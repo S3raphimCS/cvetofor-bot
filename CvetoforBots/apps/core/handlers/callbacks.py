@@ -572,22 +572,29 @@ def ask_old_contact_info(callback: types.CallbackQuery | types.Message, context:
         chat_id = callback.chat.id
     tg_user = TelegramUser.objects.filter(telegram_id=callback.from_user.id).first()
     if hasattr(tg_user, "first_name") and hasattr(tg_user, "contact"):
-        user_name, user_contact = tg_user.first_name, tg_user.contact
-        kb_builder = KeyboardBuilder()
-        message = f"Ваше имя '{user_name}' и контактные данные '{user_contact}'?"
-        buttons_list = [
-            types.InlineKeyboardButton(constants.PostCardButtons.YES.text,
-                                       callback_data="set-old-info"),
-            types.InlineKeyboardButton(constants.PostCardButtons.NO.text,
-                                       callback_data="go-to-new-contact-info")
-        ]
-        kb_builder.add_rows(buttons_list, row_width=2)
-        keyboard = kb_builder.build()
-        bot.send_message(
-            chat_id=chat_id,
-            text=message,
-            reply_markup=keyboard,
-        )
+        if tg_user.first_name and tg_user.contact:
+            user_name, user_contact = tg_user.first_name, tg_user.contact
+            kb_builder = KeyboardBuilder()
+            message = f"Ваше имя '{user_name}' и контактные данные '{user_contact}'?"
+            buttons_list = [
+                types.InlineKeyboardButton(constants.PostCardButtons.YES.text,
+                                           callback_data="set-old-info"),
+                types.InlineKeyboardButton(constants.PostCardButtons.NO.text,
+                                           callback_data="go-to-new-contact-info")
+            ]
+            kb_builder.add_rows(buttons_list, row_width=2)
+            keyboard = kb_builder.build()
+            bot.send_message(
+                chat_id=chat_id,
+                text=message,
+                reply_markup=keyboard,
+            )
+        else:
+            bot.send_message(
+                chat_id=chat_id,
+                text="Введите ваше имя"
+            )
+            bot.register_next_step_handler_by_chat_id(callback.message.chat.id, ask_customer_name, context)
     else:
         bot.send_message(
             chat_id=chat_id,
