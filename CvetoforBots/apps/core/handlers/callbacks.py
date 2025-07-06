@@ -280,7 +280,7 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
             mediable_id=bouquet.id)[1]
         if hasattr(bouquet_photo_path, "media"):
             if bouquet_photo_path.media.uuid:
-                photo_path = Path(settings.PATH_TO_MEDIA_ON_SERVER + bouquet_photo_path.media.uuid)
+                photo_path = Path(settings.PATH_TO_MEDIA_ON_SERVER + "/" + bouquet_photo_path.media.uuid)
                 if photo_path.exists():
                     if len(bouquet_text) > 1024:
                         bouquet_text = (
@@ -397,7 +397,7 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
             mediable_id=bouquet.id)[1]
         if hasattr(bouquet_photo_path, "media"):
             if bouquet_photo_path.media.uuid:
-                photo_path = Path(settings.PATH_TO_MEDIA_ON_SERVER + bouquet_photo_path.media.uuid)
+                photo_path = Path(settings.PATH_TO_MEDIA_ON_SERVER + "/" + bouquet_photo_path.media.uuid)
                 if photo_path.exists():
                     if len(bouquet_text) > 1024:
                         bouquet_text = (
@@ -484,7 +484,7 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
             mediable_id=next_bouquet.id)[1]
         if hasattr(bouquet_photo_path, "media"):
             if bouquet_photo_path.media.uuid:
-                photo_path = Path(settings.PATH_TO_MEDIA_ON_SERVER + bouquet_photo_path.media.uuid)
+                photo_path = Path(settings.PATH_TO_MEDIA_ON_SERVER + "/" + bouquet_photo_path.media.uuid)
                 if photo_path.exists():
                     if len(bouquet_text) > 1024:
                         bouquet_text = (

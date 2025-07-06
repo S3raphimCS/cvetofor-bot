@@ -10,7 +10,7 @@ from CvetoforBots.apps.core.models import BotInstance
 class BotService:
     RUNNING = 'running'
     STOPPED = 'stopped'
-    COMMAND = ('python3', 'manage.py', 'run_bot')
+    COMMAND = ('venv/bin/python3', 'manage.py', 'run_bot')
     # COMMAND = ("python", "manage.py", "run_bot")  # For Windows
 
     def __init__(self, bot_instance: BotInstance):
@@ -57,5 +57,6 @@ class BotService:
                 self.bot.down_at = timezone.now()
 
             self.bot.save()
+            raise ImportError("123")
         except Exception as err:
             logger.error(f"Ошибка при изменении статуса бота: {err}")
