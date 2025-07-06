@@ -74,7 +74,8 @@ def category_callback(callback: types.CallbackQuery, context: dict[str, Any]):
     )
 
     if not TelegramUser.objects.filter(telegram_id=callback.from_user.id).exists():
-        TelegramUser.objects.create(telegram_id=callback.from_user.id, username=callback.from_user.username,
+        TelegramUser.objects.create(telegram_id=callback.from_user.id,
+                                    username="@" + callback.from_user.username if callback.from_user.username else None,
                                     bot=bot_instance)
     else:
         user = TelegramUser.objects.filter(telegram_id=callback.from_user.id).first()
