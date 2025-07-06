@@ -3,7 +3,7 @@ from django.urls import include, path
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('docs/', include('CvetoforBots.apps.core.urls')),
-    path('', include('CvetoforBots.apps.transactions.urls')),
+    path('bots/admin/', admin.site.urls),
+    path('bots/docs/', include('CvetoforBots.apps.core.urls')),
+    path('bots/', include('CvetoforBots.apps.transactions.urls')),
 ]

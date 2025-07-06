@@ -101,5 +101,6 @@ class TelegramBot:
         while True:
             try:
                 self.bot.infinity_polling(logger_level=logging.WARNING)
-            except Exception:
+            except Exception as err:
+                logger.error(f"Ошибка в работе бота {self.bot_instance}: {err}")
                 sleep(5)

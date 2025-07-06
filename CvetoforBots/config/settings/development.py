@@ -12,7 +12,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 DOMAIN = config("DOMAIN", default="localhost:8000")
 
-ALLOWED_HOSTS = [f"{DOMAIN}", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [f"{DOMAIN}", "localhost", "127.0.0.1", "xn--b1ag1aakjpl.xn--p1ai"]
 
 # FORCE_SCRIPT_NAME = '/bots'
 
