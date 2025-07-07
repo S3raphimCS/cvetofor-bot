@@ -184,3 +184,22 @@ class Mediable(models.Model):
     class Meta:
         managed = False
         db_table = "mediables"
+
+
+class Remain(models.Model):
+    id = models.AutoField(db_column="id", primary_key=True)
+    group_product = models.ForeignKey(GroupProduct, on_delete=models.DO_NOTHING, db_column="group_product_id", related_name="remains", null=True)
+    market = models.ForeignKey(Market, on_delete=models.DO_NOTHING, db_column="market_id", null=True)
+    quantity = models.IntegerField(db_column="quantity", default=0)
+    published = models.BooleanField(db_column="published", default=False)
+    deleted_at = models.DateTimeField(db_column="deleted_at", null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, db_column="product_id", null=True)
+
+    def __str__(self):
+        return f"Остаток для {self.group_product}: {self.quantity} шт."
+
+    class Meta:
+        db_table = 'remains'
+        managed = False
+        verbose_name = "Остаток товара"
+        verbose_name_plural = "Остатки товаров"

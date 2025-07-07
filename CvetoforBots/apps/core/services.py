@@ -10,8 +10,8 @@ from CvetoforBots.apps.core.models import BotInstance
 class BotService:
     RUNNING = 'running'
     STOPPED = 'stopped'
-    # COMMAND = ('venv/bin/python3', 'manage.py', 'run_bot')
-    COMMAND = ("python", "manage.py", "run_bot")  # For Windows
+    COMMAND = ('venv/bin/python3', 'manage.py', 'run_bot')
+    # COMMAND = ("python", "manage.py", "run_bot")  # For Windows
 
     def __init__(self, bot_instance: BotInstance):
         self.bot = bot_instance

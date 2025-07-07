@@ -202,6 +202,10 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
     chat_id = callback.message.chat.id
     message_id = callback.message.message_id
     storage = UserStorage()
+    RedisCacheManager.set(
+        callback.from_user.id,
+        **{"previous_bouquets": []}
+    )
 
     # Получаем или создаём состояние
     current_state = storage.get_current_state(chat_id)
@@ -246,10 +250,9 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
 
     # Букет с кнопкой далее
     bouquet = GroupProduct.objects.prefetch_related("prices").filter(
-        flower_filter, deleted_at__isnull=True, is_public=True, published=True,
+        flower_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True,
         prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
         "prices__price").first()
-
     if bouquet:
         compound = Blocks.objects.filter(blockable_type="App\Models\GroupProduct").filter(  # noqa
             blockable_id=bouquet.id).all().order_by("position")
@@ -320,6 +323,10 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
     chat_id = callback.message.chat.id
     message_id = callback.message.message_id
     storage = UserStorage()
+    RedisCacheManager.set(
+        callback.from_user.id,
+        **{"previous_bouquets": []}
+    )
 
     # Получаем или создаём состояние
     current_state = storage.get_current_state(chat_id)
@@ -364,7 +371,7 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
 
     # Букет с кнопкой далее
     bouquet = GroupProduct.objects.prefetch_related("prices").filter(
-        price_filter, deleted_at__isnull=True, is_public=True, published=True,
+        price_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True, title__icontains="букет",
         prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
         "prices__price").first()
     if bouquet:
@@ -437,16 +444,30 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
     bot = context['bot']
     chat_id = callback.message.chat.id
     bouquet_id = callback.data.split()[1]
+
+    user_data = RedisCacheManager.get(callback.from_user.id)
+    prev_bouquets = user_data.get("previous_bouquets", [])
+    prev_bouquets.append(bouquet_id)
+    user_data["previous_bouquets"] = prev_bouquets
+    RedisCacheManager.set(callback.from_user.id, **user_data)
+
     if "flower_filter" in callback.data:
         query_filter = make_bouquet_query(callback.data.split("flower_filter:")[1])
+        next_bouquet = GroupProduct.objects.prefetch_related("prices").exclude(id__in=prev_bouquets).filter(
+            query_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True,
+            prices__price__gte=GroupProduct.objects.prefetch_related("prices").get(id=bouquet_id).prices.filter(
+                price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price,
+            prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
+            "prices__price").first()
     else:
         query_filter = make_bouquet_query(callback.data.split("filter:")[1])
-    next_bouquet = GroupProduct.objects.prefetch_related("prices").filter(
-        query_filter, deleted_at__isnull=True, is_public=True, published=True,
-        prices__price__gt=GroupProduct.objects.prefetch_related("prices").get(id=bouquet_id).prices.filter(
-            price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price,
-        prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
-        "prices__price").first()
+        next_bouquet = GroupProduct.objects.prefetch_related("prices").exclude(id__in=prev_bouquets).filter(
+            query_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True,
+            title__icontains="букет",
+            prices__price__gte=GroupProduct.objects.prefetch_related("prices").get(id=bouquet_id).prices.filter(
+                price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price,
+            prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
+            "prices__price").first()
     kb_builder = KeyboardBuilder()
     if next_bouquet:
         if "flower_filter" in callback.data:
