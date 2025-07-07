@@ -678,7 +678,7 @@ def ask_customer_name(message, context: dict[str, Any]):
             RedisCacheManager.set(message.from_user.id, **order_details)
             bot.send_message(
                 chat_id=chat_id,
-                text="Введите ваш контакт (номер телефона, Whatsapp и т.д.)"
+                text="Введите ваш номер телефона в формате 79123456789"
             )
             bot.register_next_step_handler_by_chat_id(message.chat.id, ask_customer_contact, context)
         else:
@@ -704,14 +704,21 @@ def ask_customer_contact(message, context: dict[str, Any]):
     chat_id = message.chat.id
     try:
         if message.text != "/menu":
-            order_details = RedisCacheManager.get(message.from_user.id)
-            order_details["user_contact"] = message.text
-            RedisCacheManager.set(message.from_user.id, **order_details)
-            bot.send_message(
-                chat_id=chat_id,
-                text="Введите имя получателя"
-            )
-            bot.register_next_step_handler_by_chat_id(message.chat.id, ask_recipient_name, context)
+            if not is_valid_russian_phone(message.text):
+                bot.send_message(
+                    chat_id=chat_id,
+                    text="Некорректно введенный номер. Попробуйте еще раз"
+                )
+                bot.register_next_step_handler_by_chat_id(message.chat.id, ask_customer_contact, context)
+            else:
+                order_details = RedisCacheManager.get(message.from_user.id)
+                order_details["user_contact"] = message.text
+                RedisCacheManager.set(message.from_user.id, **order_details)
+                bot.send_message(
+                    chat_id=chat_id,
+                    text="Введите имя получателя"
+                )
+                bot.register_next_step_handler_by_chat_id(message.chat.id, ask_recipient_name, context)
         else:
             return menu(message, context)
     except Exception as err:

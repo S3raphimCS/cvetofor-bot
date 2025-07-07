@@ -36,9 +36,6 @@ class OrderAdmin(admin.ModelAdmin):
         try:
             product = GroupProduct.objects.get(id=obj.group_product_id)
             return product.title
-
-            # Или просто вернуть название
-            # return product.name
         except GroupProduct.DoesNotExist:
             return f"Товар с ID {obj.product_id} не найден"
 
