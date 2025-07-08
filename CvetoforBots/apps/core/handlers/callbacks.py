@@ -261,10 +261,15 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
              i is not None]) if compound.exists() else None
         if compound:
             compound = combine_duplicate_items(compound)
-        bouquet_text = (
-            f"{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.\n"
-            f"{'Описание: ' + bouquet.description if bouquet.description else ''}\n"
-            f"{'Состав:' + compound if compound else ''}")
+        if bouquet.description:
+            bouquet_text = (
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"{'Описание: ' + bouquet.description if bouquet.description else ''}\n\n"
+                f"{'Состав:' + compound if compound else ''}")
+        else:
+            bouquet_text = (
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"{'Состав:' + compound if compound else ''}")
         bouquet_text = to_markdown(bouquet_text)
         # Клавиатура
         kb_builder = KeyboardBuilder()
@@ -382,10 +387,15 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
              i is not None]) if compound.exists() else None
         if compound:
             compound = combine_duplicate_items(compound)
-        bouquet_text = (
-            f"{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.\n"
-            f"{'Описание: ' + bouquet.description if bouquet.description else ''}\n"
-            f"{'Состав:' + compound if compound else ''}")
+        if bouquet.description:
+            bouquet_text = (
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"{'Описание: ' + bouquet.description if bouquet.description else ''}\n\n"
+                f"{'Состав:' + compound if compound else ''}")
+        else:
+            bouquet_text = (
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"{'Состав:' + compound if compound else ''}")
         bouquet_text = to_markdown(bouquet_text)
         # Клавиатура
         kb_builder = KeyboardBuilder()
@@ -495,10 +505,15 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
              i is not None]) if compound.exists() else None
         if compound:
             compound = combine_duplicate_items(compound)
-        bouquet_text = (
-            f"{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.\n"
-            f"{'Описание: ' + next_bouquet.description if next_bouquet.description else ''}\n"
-            f"{'Состав:' + compound if compound else ''}")
+        if next_bouquet.description:
+            bouquet_text = (
+                f"*{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"{'Описание: ' + next_bouquet.description if next_bouquet.description else ''}\n\n"
+                f"{'Состав:' + compound if compound else ''}")
+        else:
+            bouquet_text = (
+                f"*{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"{'Состав:' + compound if compound else ''}")
         bouquet_text = to_markdown(bouquet_text)
         bouquet_photo_path = Mediable.objects.filter(
             mediable_type="App\Models\GroupProduct",
@@ -590,9 +605,10 @@ def ask_old_contact_info(callback: types.CallbackQuery | types.Message, context:
     bot = context['bot']
     if isinstance(callback, types.CallbackQuery):
         chat_id = callback.message.chat.id
+        tg_user = TelegramUser.objects.filter(telegram_id=callback.message.from_user.id).first()
     else:
         chat_id = callback.chat.id
-    tg_user = TelegramUser.objects.filter(telegram_id=callback.from_user.id).first()
+        tg_user = TelegramUser.objects.filter(telegram_id=callback.from_user.id).first()
     if hasattr(tg_user, "first_name") and hasattr(tg_user, "contact"):
         if tg_user.first_name and tg_user.contact:
             user_name, user_contact = tg_user.first_name, tg_user.contact
@@ -616,13 +632,13 @@ def ask_old_contact_info(callback: types.CallbackQuery | types.Message, context:
                 chat_id=chat_id,
                 text="Введите ваше имя"
             )
-            bot.register_next_step_handler_by_chat_id(callback.message.chat.id, ask_customer_name, context)
+            bot.register_next_step_handler_by_chat_id(chat_id, ask_customer_name, context)
     else:
         bot.send_message(
             chat_id=chat_id,
             text="Введите ваше имя"
         )
-        bot.register_next_step_handler_by_chat_id(callback.message.chat.id, ask_customer_name, context)
+        bot.register_next_step_handler_by_chat_id(chat_id, ask_customer_name, context)
 
 
 def set_order_old_info_handler(callback: types.CallbackQuery, context: dict[str, Any]):

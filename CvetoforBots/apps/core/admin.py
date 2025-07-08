@@ -126,6 +126,8 @@ class UserOrderInline(admin.StackedInline):
 class TelegramUserAdmin(admin.ModelAdmin):
 
     inlines = [UserOrderInline]
+    search_fields = ("telegram_id", "username")
+    search_help_text = "Поиск по id и username пользователя"
 
 
 admin.site.unregister(Group)
