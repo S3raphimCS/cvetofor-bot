@@ -20,7 +20,7 @@ def make_bouquet_query(price_filter: str) -> Q:
         case "Розы Эквадор":
             query = Q(category__title__icontains='эквадор')
         case "Корзина с цветами":
-            query = Q(category__title__icontains='корзин') & ~Q(category__title__icontains="фрукт") & ~Q(
+            query = Q(category__id=3) & ~Q(category__title__icontains="фрукт") & ~Q(
                 category__title__icontains="подар")
         case "Хризантема":
             query = Q(category__title__icontains='хризантем')

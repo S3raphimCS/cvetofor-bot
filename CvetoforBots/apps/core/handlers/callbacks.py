@@ -199,6 +199,7 @@ def edit_message_to_menu(callback: types.CallbackQuery, context: dict[str, Any])
 
 def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any]):
     bot = context['bot']
+    bot_instance = context["bot_instance"]
     chat_id = callback.message.chat.id
     message_id = callback.message.message_id
     storage = UserStorage()
@@ -248,10 +249,19 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
     current_filter = list(current_filters)[0]
     flower_filter = make_bouquet_query(current_filter)
 
+    # Получение id города в зависимости от бота
+    if BotInstance.objects.filter(title__icontains="ангарск").first() == bot_instance:
+        city_id = 216
+        market_id = 15
+    else:
+        city_id = 98
+        market_id = 1
+
     # Букет с кнопкой далее
     bouquet = GroupProduct.objects.prefetch_related("prices").filter(
-        flower_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True,
-        prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
+        flower_filter, deleted_at__isnull=True, remains__market_id=market_id, remains__published=True,
+        prices__market__city__id=city_id,
+        prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
         "prices__price").first()
     if bouquet:
         compound = Blocks.objects.filter(blockable_type="App\Models\GroupProduct").filter(  # noqa
@@ -263,12 +273,12 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
             compound = combine_duplicate_items(compound)
         if bouquet.description:
             bouquet_text = (
-                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.*\n\n"
                 f"{'Описание: ' + bouquet.description if bouquet.description else ''}\n\n"
                 f"{'Состав:' + compound if compound else ''}")
         else:
             bouquet_text = (
-                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.*\n\n"
                 f"{'Состав:' + compound if compound else ''}")
         bouquet_text = to_markdown(bouquet_text)
         # Клавиатура
@@ -293,7 +303,7 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
                 if photo_path.exists():
                     if len(bouquet_text) > 1024:
                         bouquet_text = (
-                            f"{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.\n"
+                            f"{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.\n"
                             f"{'Состав:' + compound if compound else ''}")
                     return bot.send_photo(
                         chat_id=chat_id,
@@ -325,6 +335,7 @@ def handle_flower_filter(callback: types.CallbackQuery, context: dict[str, Any])
 
 def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any]):
     bot = context['bot']
+    bot_instance = context["bot_instance"]
     chat_id = callback.message.chat.id
     message_id = callback.message.message_id
     storage = UserStorage()
@@ -374,10 +385,18 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
     current_filter = list(current_filters)[0]
     price_filter = make_bouquet_query(current_filter)
 
+    if BotInstance.objects.filter(title__icontains="ангарск").first() == bot_instance:
+        city_id = 216
+        market_id = 15
+    else:
+        city_id = 98
+        market_id = 1
+
     # Букет с кнопкой далее
     bouquet = GroupProduct.objects.prefetch_related("prices").filter(
-        price_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True, title__icontains="букет",
-        prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
+        price_filter, deleted_at__isnull=True, remains__market_id=market_id, remains__published=True, title__icontains="букет",
+        prices__market__city__id=city_id,
+        prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
         "prices__price").first()
     if bouquet:
         compound = Blocks.objects.filter(blockable_type="App\Models\GroupProduct").filter(  # noqa
@@ -389,12 +408,12 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
             compound = combine_duplicate_items(compound)
         if bouquet.description:
             bouquet_text = (
-                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.*\n\n"
                 f"{'Описание: ' + bouquet.description if bouquet.description else ''}\n\n"
                 f"{'Состав:' + compound if compound else ''}")
         else:
             bouquet_text = (
-                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"*{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.*\n\n"
                 f"{'Состав:' + compound if compound else ''}")
         bouquet_text = to_markdown(bouquet_text)
         # Клавиатура
@@ -419,7 +438,7 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
                 if photo_path.exists():
                     if len(bouquet_text) > 1024:
                         bouquet_text = (
-                            f"{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.\n"
+                            f"{bouquet.title} за {bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.\n"
                             f"{'Состав:' + compound if compound else ''}")
                     return bot.send_photo(
                         chat_id=chat_id,
@@ -452,6 +471,7 @@ def handle_budget_filter(callback: types.CallbackQuery, context: dict[str, Any])
 
 def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]):
     bot = context['bot']
+    bot_instance = context["bot_instance"]
     chat_id = callback.message.chat.id
     bouquet_id = callback.data.split()[1]
 
@@ -461,22 +481,29 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
     user_data["previous_bouquets"] = prev_bouquets
     RedisCacheManager.set(callback.from_user.id, **user_data)
 
+    if BotInstance.objects.filter(title__icontains="ангарск").first() == bot_instance:
+        city_id = 216
+        market_id = 15
+    else:
+        city_id = 98
+        market_id = 1
+
     if "flower_filter" in callback.data:
         query_filter = make_bouquet_query(callback.data.split("flower_filter:")[1])
         next_bouquet = GroupProduct.objects.prefetch_related("prices").exclude(id__in=prev_bouquets).filter(
-            query_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True,
+            query_filter, deleted_at__isnull=True, remains__market_id=market_id, remains__published=True,
             prices__price__gte=GroupProduct.objects.prefetch_related("prices").get(id=bouquet_id).prices.filter(
-                price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price,
-            prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
+                price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price,
+            prices__market__city__id=city_id, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
             "prices__price").first()
     else:
         query_filter = make_bouquet_query(callback.data.split("filter:")[1])
         next_bouquet = GroupProduct.objects.prefetch_related("prices").exclude(id__in=prev_bouquets).filter(
-            query_filter, deleted_at__isnull=True, remains__market_id=1, remains__published=True,
+            query_filter, deleted_at__isnull=True, remains__market_id=market_id, remains__published=True,
             title__icontains="букет",
             prices__price__gte=GroupProduct.objects.prefetch_related("prices").get(id=bouquet_id).prices.filter(
-                price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price,
-            prices__market__city__id=98, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
+                price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price,
+            prices__market__city__id=city_id, prices__price__isnull=False, prices__deleted_at__isnull=True).order_by(
             "prices__price").first()
     kb_builder = KeyboardBuilder()
     if next_bouquet:
@@ -507,12 +534,12 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
             compound = combine_duplicate_items(compound)
         if next_bouquet.description:
             bouquet_text = (
-                f"*{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"*{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.*\n\n"
                 f"{'Описание: ' + next_bouquet.description if next_bouquet.description else ''}\n\n"
                 f"{'Состав:' + compound if compound else ''}")
         else:
             bouquet_text = (
-                f"*{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.*\n\n"
+                f"*{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.*\n\n"
                 f"{'Состав:' + compound if compound else ''}")
         bouquet_text = to_markdown(bouquet_text)
         bouquet_photo_path = Mediable.objects.filter(
@@ -525,7 +552,7 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
                 if photo_path.exists():
                     if len(bouquet_text) > 1024:
                         bouquet_text = (
-                            f"{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price} руб.\n"
+                            f"{next_bouquet.title} за {next_bouquet.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price} руб.\n"
                             f"{'Состав:' + compound if compound else ''}")
                     return bot.send_photo(
                         chat_id=chat_id,
@@ -555,9 +582,14 @@ def next_bouquet_callback(callback: types.CallbackQuery, context: dict[str, Any]
 
 def order_callback(callback: types.CallbackQuery, context: dict[str, Any]):
     bot = context['bot']
+    bot_instance = context["bot_instance"]
     chat_id = callback.message.chat.id
     product_id = callback.data.split()[1]
     product = GroupProduct.objects.prefetch_related("prices").get(id=product_id)
+    if BotInstance.objects.filter(title__icontains="ангарск").first() == bot_instance:
+        city_id = 216
+    else:
+        city_id = 98
     RedisCacheManager.set(
         callback.from_user.id,
         **{
@@ -572,7 +604,7 @@ def order_callback(callback: types.CallbackQuery, context: dict[str, Any]):
             "delivery_date": None,
             "time_interval": None,
             "amount": float(
-                product.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=98).first().price),
+                product.prices.filter(price__isnull=False, deleted_at__isnull=True, market__city__id=city_id).first().price),
         }
     )
     kb_builder = KeyboardBuilder()
