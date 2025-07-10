@@ -22,6 +22,8 @@ def send_instant_mailing() -> None:
     """Задача отправки рассылки со статусом ready_to_send=True и is_instant=True."""
     mailings = Mailing.objects.filter(ready_to_send=True, is_processed=False, is_instant=True)
     for mailing in mailings:
+        mailing.is_processed = True
+        mailing.save(update_fields=["is_processed"])
         bot = TelegramBot(mailing.bot).bot
         match mailing.recipient_type:
             case RecipientType.ALL.value:
@@ -43,8 +45,7 @@ def send_instant_mailing() -> None:
                 if mailing.button_link and mailing.button_link:
                     kb_builder = KeyboardBuilder()
                     buttons_list = [
-                        types.InlineKeyboardButton(f"{mailing.button_text}",
-                                                   callback_data="pay-order", url=mailing.button_link),
+                        types.InlineKeyboardButton(f"{mailing.button_text}", url=mailing.button_link),
                     ]
                     kb_builder.add_rows(buttons_list, row_width=1)
                     keyboard = kb_builder.build()
@@ -93,6 +94,8 @@ def send_timed_mailing() -> None:
     now = timezone.now()
     mailings = Mailing.objects.filter(ready_to_send=True, is_processed=False, is_instant=False, time_start__lte=now)
     for mailing in mailings:
+        mailing.is_processed = True
+        mailing.save(update_fields=["is_processed"])
         bot = TelegramBot(mailing.bot).bot
         match mailing.recipient_type:
             case RecipientType.ALL.value:
@@ -114,8 +117,7 @@ def send_timed_mailing() -> None:
                 if mailing.button_link and mailing.button_link:
                     kb_builder = KeyboardBuilder()
                     buttons_list = [
-                        types.InlineKeyboardButton(f"{mailing.button_text}",
-                                                   callback_data="pay-order", url=mailing.button_link),
+                        types.InlineKeyboardButton(f"{mailing.button_text}", url=mailing.button_link),
                     ]
                     kb_builder.add_rows(buttons_list, row_width=1)
                     keyboard = kb_builder.build()
