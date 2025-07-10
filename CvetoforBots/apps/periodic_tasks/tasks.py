@@ -24,6 +24,9 @@ def send_instant_mailing() -> None:
     for mailing in mailings:
         bot = TelegramBot(mailing.bot).bot
         match mailing.recipient_type:
+            case RecipientType.ALL.value:
+                subs = TelegramUser.objects.filter(bot=mailing.bot, is_active=True)
+
             case RecipientType.NEW.value:
                 subs = TelegramUser.objects.annotate(order_count=Count("orders")).filter(order_count=0, bot=mailing.bot,
                                                                                          is_active=True)
@@ -92,6 +95,9 @@ def send_timed_mailing() -> None:
     for mailing in mailings:
         bot = TelegramBot(mailing.bot).bot
         match mailing.recipient_type:
+            case RecipientType.ALL.value:
+                subs = TelegramUser.objects.filter(bot=mailing.bot, is_active=True)
+
             case RecipientType.NEW.value:
                 subs = TelegramUser.objects.annotate(order_count=Count("orders")).filter(order_count=0, bot=mailing.bot,
                                                                                          is_active=True)

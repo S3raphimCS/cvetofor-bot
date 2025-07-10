@@ -3,6 +3,7 @@ from django.db import models
 
 class RecipientType(models.TextChoices):
     """Тип получателей рассылки"""
+    ALL = 'ALL', 'Все'
     NEW = 'NEW', 'Новые'
     ONE = 'ONE', 'Разовые покупатели'
     REGULAR = 'REGULAR', 'Постоянные'
