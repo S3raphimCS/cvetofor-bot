@@ -12,5 +12,6 @@ class MailingLogInline(admin.TabularInline):
 class MailingAdmin(admin.ModelAdmin):
 
     list_display = ["title", "is_processed"]
-    inlines = [MailingLogInline]
+    # inlines = [MailingLogInline]
+    # Пока что убрал. Из-за большого кол-ва логов сильно лагает страница
     readonly_fields = ["is_processed"]
