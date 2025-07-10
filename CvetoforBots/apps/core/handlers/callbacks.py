@@ -885,7 +885,7 @@ def ask_delivery_date(callback: types.CallbackQuery, context: dict[str, Any]):
     chat_id = callback.message.chat.id
     date = callback.data.split()[1]
     try:
-        order_details = RedisCacheManager.get(callback.message.from_user.id)
+        order_details = RedisCacheManager.get(callback.message.chat.id)
         order_details["delivery_date"] = date
         RedisCacheManager.set(callback.message.chat.id, **order_details)
         kb_builder = KeyboardBuilder()
